@@ -1,0 +1,36 @@
+<project name="feature deploy" default="deploy" basedir="."
+	xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	<path id="maven-ant-tasks.classpath" path="maven/lib/maven-ant-tasks-2.1.3.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant"
+		classpathref="maven-ant-tasks.classpath" />
+
+	<property name="release" value="https://repo.dexels.com/nexus/content/repositories/navajo" />
+
+	<xmlproperty file="${xmlmanifest}" />
+	<echo message="Version: ${install.version}"/>
+	<property name="output" value="output" />
+
+	<target name="prepare">
+		<delete dir="${output}" />
+		<mkdir dir="${output}" />
+		<copy todir="${output}" verbose="true" file="maven/pom.xml" overwrite="true" />
+		<copy verbose="true" file="distribution/${file}" overwrite="true" tofile="${output}/${file}" />
+		<replace dir="${output}" token="[[VERSION]]" value="${install.version}">
+		</replace>
+		<replace dir="${output}" token="[[ARTIFACTID]]" value="${artifact}">
+		</replace>
+		<replace dir="${output}" token="[[FILE]]" value="${file}">
+		</replace>
+	</target>
+
+
+	<target name="deploy" depends="prepare">
+		<artifact:pom id="mypom" file="${output}/pom.xml" />
+
+		<artifact:deploy file="${output}/${file}" pomrefid="mypom">
+			<remoterepository url="${release}" id="dexels" />
+			<attach file="${output}/${file}" type="zip" />
+		</artifact:deploy>
+		<delete dir="${output}" />
+	</target>
+</project>

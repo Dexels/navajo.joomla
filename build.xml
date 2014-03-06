@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id: build.xml,v 1.14 2013/05/23 14:24:55 mverhoef Exp $ -->
+<project name="NavajoJoomlaPlugin" default="all" basedir=".">
+
+	<property file="build.properties" />
+
+	 <import file="maven/superbuild.xml" />
+	<target name="clean">
+		<delete dir="work" />
+		<delete dir="distribution" />
+		<mkdir dir="distribution" />
+
+	</target>
+	<target name="authentication" depends="clean">
+		<zip zipfile="distribution/navajo_authentication.zip">
+			<fileset dir="authentication" />
+		</zip>
+		<antcall target="deploy">
+        		<param name="artifact" value="com.dexels.navajo.joomla.authentication" />
+        		<param name="xmlmanifest" value="authentication/navajo.xml" />
+        		<param name="file" value="navajo_authentication.zip" />
+		</antcall>
+
+
+	</target>
+	<target name="content">
+		<zip zipfile="distribution/navajo_content.zip">
+			<fileset dir="content" />
+		</zip>
+		<antcall target="deploy">
+        		<param name="artifact" value="com.dexels.navajo.joomla.content" />
+        		<param name="xmlmanifest" value="content/navajo.xml" />
+        		<param name="file" value="navajo_content.zip" />
+		</antcall>
+	</target>
+	<target name="com_navajo">
+		<zip zipfile="distribution/com_navajo.zip">
+			<fileset dir="com_navajo" />
+		</zip>
+		<antcall target="deploy">
+        		<param name="artifact" value="com.dexels.navajo.joomla.component" />
+        		<param name="xmlmanifest" value="com_navajo/navajo.xml" />
+        		<param name="file" value="com_navajo.zip" />
+		</antcall>
+	</target>
+	<target name="total" depends="clean">
+		<mkdir dir="work" />
+		<mkdir dir="work/plugins" />
+		<mkdir dir="work/components" />
+		<copy todir="work/plugins/">
+			<fileset dir=".">
+				<include name="content/**" />
+				<include name="authentication/**" />
+			</fileset>
+		</copy>
+		<copy todir="work/components/">
+			<fileset dir=".">
+				<include name="com_navajo/**" />
+			</fileset>
+		</copy>
+
+		<tar destfile="distribution/${ant.project.name}.tar.gz" compression="gzip">
+			<fileset dir="work" />
+		</tar>
+	</target>
+
+	<target name="template_clubsite_new">
+		<zip zipfile="distribution/template_full.zip">
+			<fileset dir="templates/clubsite_new" />
+		</zip>
+                <antcall target="deploy">
+                        <param name="artifact" value="com.dexels.navajo.joomla.template_full" />
+                        <param name="install.version" value="1.0.0" />
+                        <param name="file" value="template_full.zip" />
+                </antcall>
+	</target>
+	<target name="template_clubsite_minimal">
+		<zip zipfile="distribution/template_minimal.zip">
+			<fileset dir="templates/clubsite_minimal" />
+		</zip>
+                <antcall target="deploy">
+                        <param name="artifact" value="com.dexels.navajo.joomla.template_minimal" />
+                        <param name="install.version" value="1.0.0" />
+                        <param name="file" value="template_minimal.zip" />
+                </antcall>
+	</target>
+
+	<target name="all" depends="authentication,content,total,com_navajo,template_clubsite_new,template_clubsite_minimal" />
+
+
+</project>
+<!-- EOF: $RCSfile: build.xml,v $ -->
