@@ -6,11 +6,11 @@
 
 	<property name="release" value="https://repo.dexels.com/nexus/content/repositories/navajo" />
 
-	<xmlproperty file="${xmlmanifest}" />
-	<echo message="Version: ${install.version}"/>
 	<property name="output" value="output" />
 
 	<target name="prepare">
+		<xmlproperty file="${xmlmanifest}" />
+		<echo message="Version: ${install.version}"/>
 		<delete dir="${output}" />
 		<mkdir dir="${output}" />
 		<copy todir="${output}" verbose="true" file="maven/pom.xml" overwrite="true" />
